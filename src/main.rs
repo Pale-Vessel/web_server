@@ -18,7 +18,7 @@ fn handle_connection(mut stream: TcpStream) {
     let buf_reader = BufReader::new(&stream);
     let http_request: Vec<_> = buf_reader
         .lines()
-        .map(|result| result.unwrap())
+        .map(|result| result.expect("Couldn't read datastream"))
         .take_while(|line| !line.is_empty())
         .collect();
 
