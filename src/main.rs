@@ -1,3 +1,5 @@
+#![deny(clippy::unwrap_used)]
+
 use std::{
     io::{BufReader, prelude::*},
     net::{TcpListener, TcpStream},
