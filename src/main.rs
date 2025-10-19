@@ -23,23 +23,19 @@ fn handle_connection(mut stream: TcpStream) {
         .next()
         .expect("Expected next line")
         .expect("Failed to read line");
-    if request_line == "GET / HTTP/1.1" {
-        let status_line = "HTTP/1.1 200 OK";
-        let contents = fs::read_to_string("site.html").expect("Failed to read file");
-        let length = contents.len();
 
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
-
-        stream
-            .write_all(response.as_bytes())
-            .expect("failed to write response to stream");
+    let (status_line, filename) = if request_line == "GET / HTTP/1.1" {
+        ("HTTP/1.1 200 OK", "hello.html")
     } else {
-        let status_line = "HTTP/1.1 404 NOT FOUND";
-        let contents = fs::read_to_string("404.html").expect("404 file not found");
-        let length = contents.len();
+        ("HTTP/1.1 404 NOT FOUND", "404.html")
+    };
 
-        let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+    let contents = fs::read_to_string(filename).expect("Failed to read file");
+    let length = contents.len();
 
-        stream.write_all(response.as_bytes()).expect("failed to write response to stream");
-    }
+    let response = format!("{status_line}\r\nContent-Length: {length}\r\n\r\n{contents}");
+
+    stream
+        .write_all(response.as_bytes())
+        .expect("Failed to write response to stream");
 }
